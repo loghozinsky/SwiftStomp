@@ -90,7 +90,7 @@ fileprivate enum StompLogType : String{
 // MARK: - SwiftStomp
 public class SwiftStomp{
     
-    fileprivate var host : URL
+    fileprivate var urlRequest : URLRequest
     fileprivate var connectionHeaders : [String : String]?
     fileprivate var socket : WebSocket!
     fileprivate var acceptVersion = "1.1,1.2"
@@ -118,7 +118,16 @@ public class SwiftStomp{
     public var autoReconnect = false
     
     public init (host : URL, headers : [String : String]? = nil){
-        self.host = host
+        self.urlRequest = URLRequest(url: host)
+        self.connectionHeaders = headers
+        
+        
+        /// Configure reachability
+        self.initReachability()
+    }
+    
+    public init (request : URLRequest, headers : [String : String]? = nil){
+        self.urlRequest = request
         self.connectionHeaders = headers
         
         
@@ -151,8 +160,6 @@ public extension SwiftStomp{
             self.stompConnect()
             return
         }
-        
-        var urlRequest = URLRequest(url: self.host)
         
         //** Accept Version
         self.acceptVersion = acceptVersion
